@@ -3,8 +3,6 @@
 #endif
 #define _math_methodmap_included
 
-// version 1.0
-
 methodmap Math
 {
 // #region constants
@@ -373,23 +371,23 @@ methodmap Math
 	}
 // #endregion
 // #region arraylist methods
-	public static float AMean(const ArrayList samples, const bool isFloat = true)
+	public static float AMean(const ArrayList samples, const bool isFloat = true, const int block = 0)
 	{
 		float sum = 0.0;
 		for (int i = 0; i < samples.Length; ++i)
 		{
 			if(isFloat)
 			{
-				sum += view_as<float>(samples.Get(i));
+				sum += view_as<float>(samples.Get(i, block));
 			}
 			else
 			{
-				sum += float(samples.Get(i));
+				sum += float(samples.Get(i, block));
 			}
 		}
 		return sum/float(samples.Length);
 	}
-	public static float ASampleMean(const ArrayList samples, const bool isFloat = true)
+	public static float ASampleMean(const ArrayList samples, const bool isFloat = true, const int block = 0)
 	{
 		float mean = 0.0;
 		float m = 0.0;
@@ -397,25 +395,25 @@ methodmap Math
 		{
 			if(isFloat)
 			{
-				mean += (view_as<float>(samples.Get(i)) - mean) / ++m;
+				mean += (view_as<float>(samples.Get(i, block)) - mean) / ++m;
 			}
 			else
 			{
-				mean += (float(samples.Get(i)) - mean) / ++m;
+				mean += (float(samples.Get(i, block)) - mean) / ++m;
 			}
 		}
 		return mean;
 	}
-	public static float ASampleVariance(const ArrayList samples, const bool isFloat = true)
+	public static float ASampleVariance(const ArrayList samples, const bool isFloat = true, const int block = 0)
 	{
 		float variance = 0.0;
 		if(isFloat)
 		{
-			float t = view_as<float>(samples.Get(0));
+			float t = view_as<float>(samples.Get(0, block));
 			for (int i = 1; i < samples.Length; i++)
 			{
 				t += view_as<float>(samples.Get(i));
-				float diff = ((i + 1.0) * view_as<float>(samples.Get(i))) - t;
+				float diff = ((i + 1.0) * view_as<float>(samples.Get(i, block))) - t;
 				variance += (diff * diff)/( ( i + 1.0 ) * i);
 			}
 
@@ -423,18 +421,18 @@ methodmap Math
 		}
 		else
 		{
-			float t = float(samples.Get(0));
+			float t = float(samples.Get(0, block));
 			for (int i = 1; i < samples.Length; i++)
 			{
 				t += float(samples.Get(i));
-				float diff = ((i + 1.0) * float(samples.Get(i))) - t;
+				float diff = ((i + 1.0) * float(samples.Get(i, block))) - t;
 				variance += (diff * diff)/( ( i + 1.0 ) * i);
 			}
 
 			return variance/float(samples.Length - 1);
 		}
 	}
-	public static float APopulationVariance(const ArrayList samples, const bool isFloat = true)
+	public static float APopulationVariance(const ArrayList samples, const bool isFloat = true, const int block = 0)
 	{
 		float mean = Math.AMean(samples, isFloat);
 		if(isFloat)
@@ -442,7 +440,7 @@ methodmap Math
 			float sum = 0.0;
 			for (int i = 0; i < samples.Length; i++)
 			{
-				sum += Pow(view_as<float>(samples.Get(i)) - mean, 2.0);
+				sum += Pow(view_as<float>(samples.Get(i, block)) - mean, 2.0);
 			}
 			return sum/float(samples.Length);
 		}
@@ -451,23 +449,24 @@ methodmap Math
 			float sum = 0.0;
 			for (int i = 0; i < samples.Length; i++)
 			{
-				sum += Pow(float(samples.Get(i)) - mean, 2.0);
+				sum += Pow(float(samples.Get(i, block)) - mean, 2.0);
 			}
 			return sum/float(samples.Length);
 		}
 	}
-	public static float AStandardPopulationDeviation(const ArrayList samples, const bool isFloat = true)
+	public static float AStandardPopulationDeviation(const ArrayList samples, const bool isFloat = true, const int block = 0)
 	{
-		return SquareRoot(Math.APopulationVariance(samples, isFloat));
+		return SquareRoot(Math.APopulationVariance(samples, isFloat, block));
 	}
-	public static int AWithinStandardDeviation(const ArrayList samples, const float mean, const float deviation, const bool isFloat = false)
+	public static int AWithinStandardDeviation(const ArrayList samples, const float mean,
+												const float deviation, const bool isFloat = false, const int block = 0)
 	{
 		int count = 0;
 		if(isFloat)
 		{
 			for (int i; i < samples.Length; i++)
 			{
-				float value = view_as<float>(samples.Get(i));
+				float value = view_as<float>(samples.Get(i, block));
 				if ( (mean - deviation) < value < (mean + deviation) )
 				{
 					++count;
@@ -479,7 +478,7 @@ methodmap Math
 		{
 			for (int i; i < samples.Length; i++)
 			{
-				float value = float(samples.Get(i));
+				float value = float(samples.Get(i, block));
 				if ( (mean - deviation) < value < (mean + deviation) )
 				{
 					++count;
@@ -488,28 +487,28 @@ methodmap Math
 			return count;
 		}
 	}
-	public static float ARelativeVariance(const ArrayList samples, const bool isFloat = true)
+	public static float ARelativeVariance(const ArrayList samples, const bool isFloat = true, const int block = 0)
 	{
 		if(isFloat)
 		{
-			float last = view_as<float>(samples.Get(0));
+			float last = view_as<float>(samples.Get(0, block));
 			float average = last
 			for(int i = 1; i < samples.Length; ++i)
 			{
-				average += Math.Square(view_as<float>(samples.Get(i)) - last, true);
-				last = view_as<float>(samples.Get(i));
+				average += Math.Square(view_as<float>(samples.Get(i, block)) - last, true);
+				last = view_as<float>(samples.Get(i, block));
 			}
 			average /= float(samples.Length);
 			return average;
 		}
 		else
 		{
-			float last = float(samples.Get(0));
+			float last = float(samples.Get(0, block));
 			float average = last;
 			for(int i = 1; i < samples.Length; ++i)
 			{
-				average += Math.Square(float(samples.Get(i)) - last, true);
-				last = float(samples.Get(i));
+				average += Math.Square(float(samples.Get(i, block)) - last, true);
+				last = float(samples.Get(i, block));
 			}
 			average /= float(samples.Length);
 			return average;
@@ -794,6 +793,65 @@ methodmap Math
 		}
 	}
 	/// <summary>
+	/// Hyperbolic Area Sine
+	/// </summary>
+	/// <param name="value">The real value.</param>
+	/// <returns>The hyperbolic angle, i.e. the area of its hyperbolic sector.</returns>
+	/* public static float Asinh(const any value, const bool isFloat = true)
+	{
+		// asinh(x) = Sign(x) * ln(|x| + sqrt(x*x + 1))
+		// if |x| > huge, asinh(x) ~= Sign(x) * ln(2|x|)
+
+		if(isFloat)
+		{
+			if (FloatAbs(view_as<float>(value)) >= 268435456.0) // 2^28, taken from freeBSD
+			{
+				return Math.Sign(view_as<float>(value), isFloat)
+				 * (Math.Log(FloatAbs(view_as<float>(value)), true, Math.e())
+				  + Math.Log(2.0, true, Math.e()));
+			}
+
+			return Math.Sign(value, isFloat) * Math.Log(FloatAbs(view_as<float>(value), true, Math.e())) + SquareRoot((view_as<float>(value) * view_as<float>(value)) + 1.0);
+		}
+		else
+		{
+			if (Math.Abs(value, .isFloat = false) >= 268435456) // 2^28, taken from freeBSD
+			{
+				return Math.Sign(float(value), true) * (Math.Log(FloatAbs(float(value)), true, Math.e()) + Math.Log(2, Math.e()));
+			}
+
+			return Math.Sign(value, isFloat) * Math.Log(FloatAbs(float(value), .isFloat = false, Math.e()) + SquareRoot((float(value) * float(value)) + 1.0));
+		}
+	} */
+	/// <summary>
+	/// Hyperbolic Area Cosine
+	/// </summary>
+	/// <param name="value">The real value.</param>
+	/// <returns>The hyperbolic angle, i.e. the area of its hyperbolic sector.</returns>
+	/* public static float Acosh(const any value, const bool isFloat = true)
+	{
+		// acosh(x) = ln(x + sqrt(x*x - 1))
+		// if |x| >= 2^28, acosh(x) ~ ln(x) + ln(2)
+		if(isFloat)
+		{
+			if (FloatAbs(view_as<float>(value)) >= 268435456.0) // 2^28, taken from freeBSD
+			{
+				return Logarithm((value)) + Logarithm(2.0);
+			}
+
+			return Logarithm(view_as<float>(value) + (SquareRoot(view_as<float>(value) - 1.0) * SquareRoot(view_as<float>(value) + 1.0)), Constants_E);
+		}
+		else
+		{
+			if (Math.abs(value, .isFloat = false)) >= 268435456.0) // 2^28, taken from freeBSD
+			{
+				return Logarithm(float(value)) + Logarithm(2.0);
+			}
+
+			return Logarithm(float(value) + (SquareRoot(float(value) - 1.0) * SquareRoot(float(value) + 1.0)), Constants_E);
+		}
+	} */
+	/// <summary>
 	/// Hyperbolic Area Tangent
 	/// </summary>
 	/// <param name="value">The real value.</param>
@@ -881,6 +939,86 @@ methodmap Math
 		float fLength = float(length);
 		return (totalProduct - ((rawSumX * rawSumY) / fLength) /
 				Math.Sqrt(squaredSumX - (sumSquaredX / fLength) ) * Math.Sqrt(squaredSumY - (sumSquaredY / fLength ) ) );
+	}
+	public static float APearsonCoefficient(const ArrayList x, const bool isXFloat, const int blockX, const ArrayList y, const bool isYFloat, const int blockY)
+	{
+		if(x.Length != y.Length)
+		{
+			return -2.0;
+		}
+		float rawSumX, squaredSumX, rawSumY, squaredSumY, totalProduct;
+		for(int i = 0; i < x.Length; ++i)
+		{
+			float xi = isXFloat ? view_as<float>(x.Get(i, blockX)) : float(x.Get(i, blockX));
+			float yi = isYFloat ? view_as<float>(y.Get(i, blockY)) : float(y.Get(i, blockY));
+			rawSumX += xi;
+			squaredSumX = Math.Square(xi, .isFloat = true);
+
+			rawSumY += yi;
+			squaredSumY = Math.Square(yi, .isFloat = true);
+
+			totalProduct += (xi * yi);
+		}
+
+
+		float sumSquaredX = Math.Square(rawSumX, .isFloat = true);
+		float sumSquaredY = Math.Square(rawSumY, .isFloat = true);
+		float fLength = float(x.Length);
+		return (totalProduct - ((rawSumX * rawSumY) / fLength) /
+				Math.Sqrt(squaredSumX - (sumSquaredX / fLength) ) * Math.Sqrt(squaredSumY - (sumSquaredY / fLength ) ) );
+	}
+	public static float APearsonCoefficient2(const ArrayList x, const bool isXFloat, const int blockX, const ArrayList y, const bool isYFloat, const int blockY)
+	{
+		if(x.Length != y.Length || x.Length < 2)
+		{
+			return -2.0;
+		}
+		float sumX = 0.0, sumY = 0.0, sumXSqr = 0.0, sumYSqr = 0.0, sumProductXY = 0.0;
+
+		for(int i = 0; i < x.Length; ++i)
+		{
+			float xi = isXFloat ? view_as<float>(x.Get(i, blockX)) : float(x.Get(i, blockX));
+			float yi = isYFloat ? view_as<float>(y.Get(i, blockY)) : float(y.Get(i, blockY));
+			sumX += xi;
+			sumXSqr += xi * xi;
+			sumY += yi;
+			sumYSqr += yi * yi;
+			sumProductXY += xi * yi;
+		}
+
+		float avgX = sumX / x.Length;
+		float avgY = sumY / x.Length;
+
+		return ( (sumProductXY / x.Length) - (avgX * avgY) ) /
+			Math.Sqrt( ( (sumXSqr / x.Length) - (avgX * avgX) ) * ( (sumYSqr /x.Length) - (avgY * avgY) ) );
+	}
+
+	public static float APearsonCoefficient3(const ArrayList X, const bool isXFloat, const int blockX, const ArrayList Y, const bool isYFloat, const int blockY)
+	{
+		if(X.Length != Y.Length || X.Length < 2)
+		{
+			return -2.0;
+		}
+		float sumX, sumX2, sumY, sumY2, sumXY;
+	
+		int n = X.Length;
+	
+		for(int i = 0; i < X.Length; ++i)
+		{
+			float x = isXFloat ? view_as<float>(X.Get(i, blockX)) : float(X.Get(i, blockX));
+			float y = isYFloat ? view_as<float>(Y.Get(i, blockY)) : float(Y.Get(i, blockY));
+			sumX += x;
+			sumX2 += x * x;
+			sumY += y;
+			sumY2 += y * y;
+			sumXY += x * y;
+		}
+	
+		float stdX = Math.Sqrt((sumX2 / n - sumX * sumX / n / n), true);
+		float stdY = Math.Sqrt((sumY2 / n - sumY * sumY / n / n), true);
+		float covariance = (sumXY / n - sumX * sumY / n / n);
+	
+		return covariance / stdX / stdY; 
 	}
 // #endregion
 // #region Relative Variance
