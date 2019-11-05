@@ -62,6 +62,26 @@ methodmap Math
 			return (value > value2) ? value : value2;
 		}
 	}
+	public static float Mod(const float number, const float denominator)
+	{
+		float mod = Math.Abs(number, true);
+		float denom = Math.Abs(denominator, true);
+
+		// Finding mod by repeated subtraction
+		while (mod >= denom)
+		{
+			mod -= denom;
+		}
+
+		// Sign of result typically depends
+		// on sign of a.
+		if (number < 0.0)
+		{
+			return -mod;
+		}
+
+		return mod;
+	}
 // #endregion
 // #region Standard methods
 	public static float ArcCos(const any angle, const bool isFloat = true)
@@ -277,13 +297,13 @@ methodmap Math
 
 		for (int i = 1; i < length; ++i)
 		{
-			if (samples[i] == number) 
+			if (samples[i] == number)
 			{
 				++count;
 			}
 			else
 			{
-				if (count > countMode) 
+				if (count > countMode)
 				{
 					countMode = count;
 					mode = number;
@@ -1000,9 +1020,9 @@ methodmap Math
 			return -2.0;
 		}
 		float sumX, sumX2, sumY, sumY2, sumXY;
-	
+
 		int n = X.Length;
-	
+
 		for(int i = 0; i < X.Length; ++i)
 		{
 			float x = isXFloat ? view_as<float>(X.Get(i, blockX)) : float(X.Get(i, blockX));
@@ -1013,12 +1033,12 @@ methodmap Math
 			sumY2 += y * y;
 			sumXY += x * y;
 		}
-	
+
 		float stdX = Math.Sqrt((sumX2 / n - sumX * sumX / n / n), true);
 		float stdY = Math.Sqrt((sumY2 / n - sumY * sumY / n / n), true);
 		float covariance = (sumXY / n - sumX * sumY / n / n);
-	
-		return covariance / stdX / stdY; 
+
+		return covariance / stdX / stdY;
 	}
 // #endregion
 // #region Relative Variance
@@ -1051,3 +1071,12 @@ methodmap Math
 	}
 // #endregion
 }
+
+#define USE_FLOAT_MOD 1
+
+#if USE_FLOAT_MOD
+stock float operator%(float number, float denom)
+{
+	return Math.Mod(number, denom);
+}
+#endif
