@@ -960,6 +960,39 @@ methodmap Math
 		return (totalProduct - ((rawSumX * rawSumY) / fLength) /
 				Math.Sqrt(squaredSumX - (sumSquaredX / fLength) ) * Math.Sqrt(squaredSumY - (sumSquaredY / fLength ) ) );
 	}
+	public static float PearsonCoefficient2(const any[] x, const bool isXFloat, const any[] y, const bool isYFloat, int length)
+	{
+		float xAvg = 0.0, yAvg = 0.0;
+
+		// calculate the dAverage of each pattern
+		for (int i = 0; i < length; i++)
+		{
+			float xi = isXFloat ? view_as<float>(x[i]) : float(x[i]);
+			float yi = isYFloat ? view_as<float>(y[i]) : float(y[i]);
+			xAvg += xi;
+			yAvg += yi;
+		}
+
+		xAvg /= float(length);
+		yAvg /= float(length);
+
+		float dS1 = 0.0, dS2 = 0.0, dS3 = 0.0;
+		for (int i = 0; i < length; i++)
+		{
+			float xi = isXFloat ? view_as<float>(x[i]) : float(x[i]);
+			float yi = isYFloat ? view_as<float>(y[i]) : float(y[i]);
+			dS1 += (xi - xAvg) * (yi - yAvg);
+			dS2 += (xi - xAvg) * (xi - xAvg);
+			dS3 += (yi - yAvg) * (yi] - yAvg);
+		}
+
+		if (dS2 * dS3 == 0.0)
+		{
+			return 0.0
+		}
+		
+		return (dS1 / Math.Sqrt((dS2 * dS3), true));
+	}
 	public static float APearsonCoefficient(const ArrayList x, const bool isXFloat, const int blockX, const ArrayList y, const bool isYFloat, const int blockY)
 	{
 		if(x.Length != y.Length)
